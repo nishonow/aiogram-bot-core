@@ -3,6 +3,9 @@ from aiogram import executor
 from loader import dp, bot
 import handlers
 import core
+import time
+
+BOT_START_TIME = time.time()
 logging.basicConfig(
     format=u'%(filename)s [LINE:%(lineno)d] #%(levelname)-8s [%(asctime)s]  %(message)s',
     level=logging.INFO,

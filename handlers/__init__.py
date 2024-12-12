@@ -1,2 +1,2 @@
 from . import admin
-from . import messages
+from . import start
