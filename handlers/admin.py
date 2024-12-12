@@ -175,7 +175,7 @@ async def broadcast_decline(call: CallbackQuery, state: FSMContext):
 
 @dp.callback_query_handler(text='clear_db')
 async def ask_clear_db(call: CallbackQuery):
-    if call.from_user.id in get_admins():
+    if call.from_user.id in get_admins() or call.from_user.id in ADMINS:
         await call.message.edit_text(
             "⚠️ Are you sure you want to clear the database? This action cannot be undone.",
             reply_markup=adminConfirmDB
@@ -185,7 +185,7 @@ async def ask_clear_db(call: CallbackQuery):
 
 @dp.callback_query_handler(text='confirm_clear_db')
 async def confirm_clear_db(call: CallbackQuery):
-    if call.from_user.id in get_admins():
+    if call.from_user.id in get_admins() or call.from_user.id in ADMINS:
         clear_db()
         await call.message.edit_text("🗑 Database has been cleared.", reply_markup=adminBack)
     else:

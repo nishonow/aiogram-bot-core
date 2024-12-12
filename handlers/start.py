@@ -19,7 +19,7 @@ async def start_command(message: types.Message):
         add_user(user_id, name, username)
 
     await message.answer(
-        "Welcome to the bot! You are now registered.", reply_markup=start
+        "Welcome to the bot! Press the button below.", reply_markup=start
     )
 
 
