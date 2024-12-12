@@ -48,4 +48,13 @@ def count_users():
     conn.close()
     return total_users
 
+def get_user_ids():
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("SELECT telegram_id FROM users")
+    telegram_ids = [row[0] for row in cursor.fetchall()]
+    conn.close()
+    return telegram_ids
+
+
 init_db()
