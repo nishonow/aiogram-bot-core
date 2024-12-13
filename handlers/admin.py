@@ -1,61 +1,14 @@
 from aiogram.dispatcher import FSMContext
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery
 from config import ADMINS
 from loader import dp, bot
 from app import BOT_START_TIME
 from core.db import count_users, get_user_ids, count_new_users_last_24_hours, clear_db, get_admins, add_admin, \
     remove_admin, count_admins
+from core.keyboards import adminKey, adminConfirm, backToSettings, settingsKey, statsKey, adminBack, adminConfirmDB, \
+    adminCancelKey
 import asyncio
 import time
-
-adminKey = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text="📊 Statistics", callback_data="stats")],
-        [InlineKeyboardButton(text="📤 Broadcast", callback_data='broadcast')],
-        [InlineKeyboardButton(text="⚙️ Settings", callback_data="settings")],
-    ]
-)
-settingsKey = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [
-            InlineKeyboardButton(text="➕ Add Admin", callback_data="add_admin"),
-            InlineKeyboardButton(text="➖ Remove Admin", callback_data="remove_admin"),
-        ],
-        [InlineKeyboardButton(text="⬅️ Back", callback_data="goback")],
-    ]
-)
-statsKey = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text="🗑 Clear Database", callback_data="clear_db")],
-        [InlineKeyboardButton(text="⬅️ Back", callback_data="goback")],
-    ]
-)
-adminBack = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text="⬅️ Back", callback_data="goback")]
-    ]
-)
-adminConfirm = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text="✅ Confirm", callback_data="confirm")],
-        [InlineKeyboardButton(text="🚫 Decline", callback_data="decline")]
-    ]
-)
-adminConfirmDB = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="✅ Confirm", callback_data="confirm_clear_db")],
-        [InlineKeyboardButton(text="❌ Cancel", callback_data="cancel_clear_db")]
-    ]
-)
-adminCancelKey = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text="❌ Cancel", callback_data="cancel_add_admin")]
-    ]
-)
-adminBackKey = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text="⬅️ Back", callback_data="cancel_add_admin")]
-    ]
-)
 
 
 # MESSAGE HANDLERS ==================================================
@@ -85,14 +38,14 @@ async def add_new_admin(message: Message, state: FSMContext):
     try:
         new_admin = int(message.text)
         if new_admin in [admin_id for admin_id in get_admins()]:  # Check from the database
-            await message.answer("⚠️ This user is already an admin.", reply_markup=adminBackKey)
+            await message.answer("⚠️ This user is already an admin.", reply_markup=backToSettings)
             await bot.delete_message(chat_id=message.chat.id, message_id=message_id)
         else:
             add_admin(new_admin)
             await message.answer(f"✅ User {new_admin} has been added as an admin.", reply_markup=settingsKey)
             await bot.delete_message(chat_id=message.chat.id, message_id=message_id)
     except ValueError:
-        await message.answer("❌ Invalid Telegram ID. Please send a valid numeric ID.", reply_markup=adminBackKey)
+        await message.answer("❌ Invalid Telegram ID. Please send a valid numeric ID.", reply_markup=backToSettings)
         await bot.delete_message(chat_id=message.chat.id, message_id=message_id)
     finally:
         await state.finish()
@@ -108,10 +61,10 @@ async def remove_old_admin(message: Message, state: FSMContext):
             await message.answer(f"✅ User {admin_to_remove} has been removed as an admin.", reply_markup=settingsKey)
             await bot.delete_message(chat_id=message.chat.id, message_id=message_id)
         else:
-            await message.answer("⚠️ This user is not an admin.", reply_markup=adminBackKey)
+            await message.answer("⚠️ This user is not an admin.", reply_markup=backToSettings)
             await bot.delete_message(chat_id=message.chat.id, message_id=message_id)
     except ValueError:
-        await message.answer("❌ Invalid Telegram ID. Please send a valid numeric ID.", reply_markup=adminBackKey)
+        await message.answer("❌ Invalid Telegram ID. Please send a valid numeric ID.", reply_markup=backToSettings)
         await bot.delete_message(chat_id=message.chat.id, message_id=message_id)
     finally:
         await state.finish()
@@ -170,7 +123,7 @@ async def broadcast_confirm(call: CallbackQuery, state: FSMContext):
 async def broadcast_decline(call: CallbackQuery, state: FSMContext):
     await state.finish()
     await call.message.delete()
-    await call.message.answer("❌ Declined", reply_markup=adminBack)
+    await call.message.answer(f"Choose what are you going to do?", reply_markup=adminKey)
 
 
 @dp.callback_query_handler(text='clear_db')
