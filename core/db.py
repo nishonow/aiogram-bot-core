@@ -124,6 +124,16 @@ def get_admins():
     return admins
 
 
+def get_admin_details():
+    admin_ids = get_admins()
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT telegram_id, name FROM users WHERE telegram_id IN ({})
+    """.format(','.join('?' * len(admin_ids))), admin_ids)
+    admins_details = cursor.fetchall()
+    conn.close()
+    return admins_details
 
 
 # Initialize the database
