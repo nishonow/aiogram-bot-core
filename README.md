@@ -4,7 +4,7 @@ This repository is a **template** for building Telegram bots with the Aiogram fr
 
 ## Features
 
-- **Basic Bot Functions**: Includes handlers for basic commands like `/start` and admin functionalities like `/count`.
+- **Basic Bot Functions**: Includes handlers for basic commands like `/start` and admin functionalities using `/admin`.
 - **Modular Structure**: A well-organized folder system for scalability.
 - **Database Integration**: Includes SQLite to store user and admin data.
 - **Custom Keyboards**: Ready-to-use keyboards for user interaction.
@@ -65,7 +65,7 @@ This repository is a **template** for building Telegram bots with the Aiogram fr
 ├── handlers/
 │   ├── __init__.py
 │   ├── admin.py
-│   ├── messages.py
+│   ├── start.py
 ├── db/
 │   └── bot.db
 ```
