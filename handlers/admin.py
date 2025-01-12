@@ -209,9 +209,10 @@ async def stats(call: CallbackQuery):
     total_users = count_users()
     new_users = count_new_users_last_24_hours()  # Count new users in the last 24 hours
     uptime_seconds = int(time.time() - BOT_START_TIME)
-    hours, remainder = divmod(uptime_seconds, 3600)
-    minutes, seconds = divmod(remainder, 60)
-    uptime = f"{hours}h {minutes}m {seconds}s"
+    days, remainder = divmod(uptime_seconds, 86400)  # 86400 seconds in a day
+    hours, remainder = divmod(remainder, 3600)      # 3600 seconds in an hour
+    minutes, seconds = divmod(remainder, 60)       # 60 seconds in a minute
+    uptime = f"{days}d {hours}h {minutes}m {seconds}s"
     total_admins = count_admins()
     await call.message.edit_text(
         f"📊 All users: {total_users}\n"
@@ -221,14 +222,16 @@ async def stats(call: CallbackQuery):
         reply_markup=statsKey
     )
 
+
 @dp.callback_query_handler(text='update')
 async def stat_update(call: CallbackQuery):
     total_users = count_users()
     new_users = count_new_users_last_24_hours()  # Count new users in the last 24 hours
     uptime_seconds = int(time.time() - BOT_START_TIME)
-    hours, remainder = divmod(uptime_seconds, 3600)
-    minutes, seconds = divmod(remainder, 60)
-    uptime = f"{hours}h {minutes}m {seconds}s"
+    days, remainder = divmod(uptime_seconds, 86400)  # 86400 seconds in a day
+    hours, remainder = divmod(remainder, 3600)      # 3600 seconds in an hour
+    minutes, seconds = divmod(remainder, 60)       # 60 seconds in a minute
+    uptime = f"{days}d {hours}h {minutes}m {seconds}s"
     total_admins = count_admins()
     await bot.answer_callback_query(call.id, "🔄 Everything's updated and ready!", show_alert=True)
     await call.message.edit_text(
@@ -238,6 +241,7 @@ async def stat_update(call: CallbackQuery):
         f"🕒 Bot Uptime: {uptime}",
         reply_markup=statsKey
     )
+
 
 
 
