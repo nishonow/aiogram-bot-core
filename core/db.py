@@ -151,7 +151,6 @@ def get_channel_ids():
     return channel_ids
 
 def add_channel(channel_id):
-    # Add the channel_id to the channels table in your database
     conn = sqlite3.connect(DB_PATH)  # Replace DB_PATH with your database path
     cursor = conn.cursor()
     cursor.execute("INSERT INTO channels (channel_id) VALUES (?)", (channel_id,))
@@ -159,7 +158,6 @@ def add_channel(channel_id):
     conn.close()
 
 def remove_channel(channel_id):
-    # Remove the channel_id from the channels table in your database
     conn = sqlite3.connect(DB_PATH)  # Replace DB_PATH with your database path
     cursor = conn.cursor()
     cursor.execute("DELETE FROM channels WHERE channel_id = ?", (channel_id,))

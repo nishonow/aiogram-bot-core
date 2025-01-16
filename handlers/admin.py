@@ -329,12 +329,10 @@ async def add_new_channel(message: Message, state: FSMContext):
     message_id = data.get('msgID')
     new_channel = message.text.strip()
 
-    # Check if the channel already exists in the DB
     if new_channel in get_channel_ids():
         await message.answer("⚠️ This channel is already added.", reply_markup=backToSettings)
         await bot.delete_message(chat_id=message.chat.id, message_id=message_id)
     else:
-        # Add the new channel to the database
         add_channel(new_channel)
         channel = await get_channel_username(new_channel)
         await message.answer(f"✅ Channel @{channel} has been added.", reply_markup=backToSettings)
@@ -352,7 +350,6 @@ async def remove_channel_prompt(call: CallbackQuery, state: FSMContext):
         channel_username = await get_channel_username(channel)
         channels_text += f"@{channel_username} {channel}\n"
 
-    # Display the list of current channels and ask for a channel to remove
     await call.message.edit_text(
         f"📝 Send the channel ID you want to remove.\n\nExisting channels:\n{channels_text}",
         reply_markup=adminCancelKey,
@@ -369,7 +366,6 @@ async def remove_existing_channel(message: Message, state: FSMContext):
     message_id = data.get('msgID')
     channel_to_remove = message.text.strip()
 
-    # Check if the channel exists in the DB
     if channel_to_remove in get_channel_ids():
         remove_channel(channel_to_remove)  # Remove from DB
         channel = await get_channel_username(channel_to_remove)

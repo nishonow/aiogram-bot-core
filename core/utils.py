@@ -6,20 +6,18 @@ from aiogram.types import ChatMemberStatus
 
 
 async def check_channel_membership(user_id: int) -> bool:
-    required_channels = get_channel_ids()  # Fetch channel IDs from the database
+    required_channels = get_channel_ids()
 
     if not required_channels:
-        # No channels in the database, consider the user as subscribed
         return True
 
     for channel_id in required_channels:
         try:
             chat_member = await bot.get_chat_member(chat_id=channel_id, user_id=user_id)
-            # Check if the user is a member or has a valid status (admin/owner)
             if chat_member.status not in [ChatMemberStatus.MEMBER, ChatMemberStatus.ADMINISTRATOR,
                                           ChatMemberStatus.OWNER]:
                 return False
-        except Exception:  # Handle invalid channel or bot not being an admin in the channel
+        except Exception:
             return False
 
     return True
