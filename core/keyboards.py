@@ -20,6 +20,10 @@ settingsKey = InlineKeyboardMarkup(
             InlineKeyboardButton(text="➕ Add Admin", callback_data="add_admin"),
             InlineKeyboardButton(text="➖ Remove Admin", callback_data="remove_admin")
         ],
+        [
+            InlineKeyboardButton(text="➕ Add Channel", callback_data="add_channel"),
+            InlineKeyboardButton(text="➖ Remove Channel", callback_data="remove_channel")
+        ],
         [InlineKeyboardButton(text="⬅️ Back", callback_data="goback")],
     ]
 )

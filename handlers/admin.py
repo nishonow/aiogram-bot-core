@@ -8,7 +8,7 @@ from config import ADMINS
 from loader import dp, bot
 from app import BOT_START_TIME
 from core.db import count_users, get_user_ids, count_new_users_last_24_hours, clear_db, get_admins, add_admin, \
-    remove_admin, count_admins, get_admin_details
+    remove_admin, count_admins, get_admin_details, get_channel_ids, remove_channel, add_channel
 from core.keyboards import adminKey, ConfirmBroadcast, backToSettings, settingsKey, statsKey, adminBack, adminConfirmDB, \
     adminCancelKey, dbBack
 import asyncio
@@ -293,6 +293,93 @@ async def cancel_clear_db(call: CallbackQuery):
         reply_markup=settingsKey,
         parse_mode="Markdown"
     )
+
+
+# ===================================================================
+# ADD CHANNEL FUNCTIONALITY ========================================
+# ===================================================================
+async def get_channel_username(channel_id):
+    # Use Bot API to get chat information
+    chat = await bot.get_chat(channel_id)
+    return chat.username  # This is the channel's username
+
+# Add new channel
+@dp.callback_query_handler(text='add_channel')
+async def add_channel_prompt(call: CallbackQuery, state: FSMContext):
+    channels = get_channel_ids()  # Fetch existing channels from DB
+    channels_text = ""
+    for channel in channels:
+        channel_username = await get_channel_username(channel)
+        channels_text += f"@{channel_username} {channel}\n"
+
+    # Display the list of current channels and ask for a new channel
+    await call.message.edit_text(
+        f"📝 Send the Telegram channel ID you want to add.\n\nExisting channels:\n{channels_text}",
+        reply_markup=adminCancelKey,
+        parse_mode='Markdown'
+    )
+    await state.update_data(msgID=call.message.message_id)
+    await state.set_state('add_channel')
+
+
+# Handle adding a channel
+@dp.message_handler(state='add_channel')
+async def add_new_channel(message: Message, state: FSMContext):
+    data = await state.get_data()
+    message_id = data.get('msgID')
+    new_channel = message.text.strip()
+
+    # Check if the channel already exists in the DB
+    if new_channel in get_channel_ids():
+        await message.answer("⚠️ This channel is already added.", reply_markup=backToSettings)
+        await bot.delete_message(chat_id=message.chat.id, message_id=message_id)
+    else:
+        # Add the new channel to the database
+        add_channel(new_channel)
+        channel = await get_channel_username(new_channel)
+        await message.answer(f"✅ Channel @{channel} has been added.", reply_markup=backToSettings)
+        await bot.delete_message(chat_id=message.chat.id, message_id=message_id)
+
+    await state.finish()
+
+
+# Remove an existing channel
+@dp.callback_query_handler(text='remove_channel')
+async def remove_channel_prompt(call: CallbackQuery, state: FSMContext):
+    channels = get_channel_ids()  # Fetch existing channels from DB
+    channels_text = ""
+    for channel in channels:
+        channel_username = await get_channel_username(channel)
+        channels_text += f"@{channel_username} {channel}\n"
+
+    # Display the list of current channels and ask for a channel to remove
+    await call.message.edit_text(
+        f"📝 Send the channel ID you want to remove.\n\nExisting channels:\n{channels_text}",
+        reply_markup=adminCancelKey,
+        parse_mode='Markdown'
+    )
+    await state.update_data(msgID=call.message.message_id)
+    await state.set_state('remove_channel')
+
+
+# Handle removing a channel
+@dp.message_handler(state='remove_channel')
+async def remove_existing_channel(message: Message, state: FSMContext):
+    data = await state.get_data()
+    message_id = data.get('msgID')
+    channel_to_remove = message.text.strip()
+
+    # Check if the channel exists in the DB
+    if channel_to_remove in get_channel_ids():
+        remove_channel(channel_to_remove)  # Remove from DB
+        channel = await get_channel_username(channel_to_remove)
+        await message.answer(f"✅ Channel @{channel} has been removed.", reply_markup=backToSettings)
+        await bot.delete_message(chat_id=message.chat.id, message_id=message_id)
+    else:
+        await message.answer("⚠️ This channel does not exist.", reply_markup=backToSettings)
+        await bot.delete_message(chat_id=message.chat.id, message_id=message_id)
+
+    await state.finish()
 
 
 # ===================================================================

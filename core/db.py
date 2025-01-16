@@ -27,6 +27,13 @@ def init_db():
     )
     """)
 
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS channels (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        channel_id TEXT UNIQUE NOT NULL -- Channel username (e.g., @your_channel)
+    );
+    """)
+
     conn.commit()
     conn.close()
 
@@ -134,6 +141,30 @@ def get_admin_details():
     admins_details = cursor.fetchall()
     conn.close()
     return admins_details
+
+def get_channel_ids():
+    conn = sqlite3.connect(DB_PATH)  # Replace DB_PATH with your database path
+    cursor = conn.cursor()
+    cursor.execute("""SELECT channel_id FROM channels""")
+    channel_ids = [row[0] for row in cursor.fetchall()]  # Extract channel IDs from query results
+    conn.close()
+    return channel_ids
+
+def add_channel(channel_id):
+    # Add the channel_id to the channels table in your database
+    conn = sqlite3.connect(DB_PATH)  # Replace DB_PATH with your database path
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO channels (channel_id) VALUES (?)", (channel_id,))
+    conn.commit()
+    conn.close()
+
+def remove_channel(channel_id):
+    # Remove the channel_id from the channels table in your database
+    conn = sqlite3.connect(DB_PATH)  # Replace DB_PATH with your database path
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM channels WHERE channel_id = ?", (channel_id,))
+    conn.commit()
+    conn.close()
 
 
 # Initialize the database
