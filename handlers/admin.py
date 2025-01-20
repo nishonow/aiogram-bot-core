@@ -1,7 +1,3 @@
-# ===================================================================
-# IMPORTS ============================================================
-# ===================================================================
-
 from aiogram.dispatcher import FSMContext
 from aiogram.types import Message, CallbackQuery
 from config import ADMINS
@@ -242,9 +238,6 @@ async def stat_update(call: CallbackQuery):
         reply_markup=statsKey
     )
 
-
-
-
 # ===================================================================
 # DATABASE CLEARING ==================================================
 # ===================================================================
@@ -294,7 +287,6 @@ async def cancel_clear_db(call: CallbackQuery):
         parse_mode="Markdown"
     )
 
-
 # ===================================================================
 # ADD CHANNEL FUNCTIONALITY ========================================
 # ===================================================================
@@ -340,7 +332,6 @@ async def add_new_channel(message: Message, state: FSMContext):
 
     await state.finish()
 
-
 # Remove an existing channel
 @dp.callback_query_handler(text='remove_channel')
 async def remove_channel_prompt(call: CallbackQuery, state: FSMContext):
@@ -377,7 +368,6 @@ async def remove_existing_channel(message: Message, state: FSMContext):
 
     await state.finish()
 
-
 # ===================================================================
 # SETTINGS ===========================================================
 # ===================================================================
@@ -407,10 +397,8 @@ async def open_settings(call: CallbackQuery):
         parse_mode="Markdown"
     )
 
-
 # Go back to settings
 @dp.callback_query_handler(text='goback', state='*')
 async def goback(call: CallbackQuery, state: FSMContext):
     await call.message.edit_text(f"Choose what are you going to do?", reply_markup=adminKey)
     await state.finish()
-

@@ -1,38 +1,10 @@
 import random
 from aiogram import types
-from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import CommandStart
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-
-from core.db import add_user, user_exists, get_channel_ids
+from core.db import add_user, user_exists
 from core.keyboards import start
-from core.utils import FUN_FACTS, check_channel_membership
+from core.utils import FUN_FACTS, check_channel_membership, send_channel_join_button
 from loader import dp, bot
-
-
-async def get_channel_username(channel_id):
-    chat = await bot.get_chat(channel_id)
-    return chat.username
-
-
-async def send_channel_join_button(user_id):
-    channel_ids = get_channel_ids()
-
-    if not channel_ids:
-        return True
-
-    if not await check_channel_membership(user_id):
-        for channel_id in channel_ids:
-            channel_username = await get_channel_username(channel_id)
-            button = InlineKeyboardButton(
-                text="Join Channel",
-                url=f"https://t.me/{channel_username}"
-            )
-            markup = InlineKeyboardMarkup().add(button)
-            await bot.send_message(user_id, "Please join the required channels to use the bot!", reply_markup=markup)
-        return False
-
-    return True
 
 
 @dp.message_handler(CommandStart())
@@ -73,4 +45,4 @@ async def fact_add(message: types.Message):
 
     text = message.text
     FUN_FACTS.append(text)
-    await message.reply("Fact added successfully!")
+    await message.reply("✅ Fact added successfully!")

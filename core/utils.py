@@ -1,4 +1,4 @@
-from aiogram.types import ChatMemberStatus
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from core.db import get_channel_ids
 from loader import bot
 
@@ -22,6 +22,34 @@ async def check_channel_membership(user_id: int) -> bool:
 
     return True
 
+async def get_channel_username(channel_id):
+    chat = await bot.get_chat(channel_id)
+    return chat.username
+
+async def get_channel_name(channel_id):
+    chat = await bot.get_chat(channel_id)
+    return chat.title
+
+async def send_channel_join_button(user_id):
+    channel_ids = get_channel_ids()
+
+    if not channel_ids:
+        return True
+
+    if not await check_channel_membership(user_id):
+        markup = InlineKeyboardMarkup(row_width=1)
+        for channel_id in channel_ids:
+            channel_username = await get_channel_username(channel_id)
+            channel_name = await get_channel_name(channel_id)
+            button = InlineKeyboardButton(
+                text=f"{channel_name}",
+                url=f"https://t.me/{channel_username}"
+            )
+            markup.add(button)
+        await bot.send_message(user_id, "❗ You need to join the channels first!\n\n"
+                                        "Click below to join and then press /start to continue. 🚀", reply_markup=markup)
+        return False
+    return True
 
 FUN_FACTS = [
     "Honey never spoils. Archaeologists have found pots of honey in ancient Egyptian tombs that are over 3,000 years old and still perfectly edible.",
