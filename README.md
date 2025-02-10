@@ -55,13 +55,10 @@ This repository is a **template** for building Telegram bots with the Aiogram fr
 ├── config.py
 ├── loader.py
 ├── requirements.txt
-├── LICENSE
-├── README.md
 ├── core/
 │   ├── __init__.py
 │   ├── db.py
 │   ├── keyboards.py
-│   ├── utils.py
 ├── handlers/
 │   ├── __init__.py
 │   ├── admin.py
