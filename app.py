@@ -11,5 +11,9 @@ logging.basicConfig(
     level=logging.INFO,
 )
 
+async def on_startup(dp):
+    await core.db.init_db()
+
+
 if __name__ == "__main__":
     executor.start_polling(dp, skip_updates=True)
