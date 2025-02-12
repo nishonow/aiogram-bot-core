@@ -88,7 +88,6 @@ async def add_admin_prompt(call: CallbackQuery, state: FSMContext):
     for admin in admins_details:
         admin_id = admin[0]
         admin_name = admin[1] if admin[1] else "Name not found"
-        # Create a clickable link for each admin's Telegram ID
         admin_link = f"[{admin_id}](tg://user?id={admin_id})"
         admins_text += f"{admin_link} | {admin_name}\n"
 
@@ -132,7 +131,6 @@ async def remove_admin_prompt(call: CallbackQuery, state: FSMContext):
     for admin in admins_details:
         admin_id = admin[0]
         admin_name = admin[1] if admin[1] else "Name not found"
-        # Create a clickable link for each admin's Telegram ID
         admin_link = f"[{admin_id}](tg://user?id={admin_id})"
         admins_text += f"{admin_link} | {admin_name}\n"
 
@@ -177,7 +175,6 @@ async def cancel_add_remove_admin(call: CallbackQuery, state: FSMContext):
     for admin in admins_details:
         admin_id = admin[0]
         admin_name = admin[1] if admin[1] else "Name not found"
-        # Create a clickable link for each admin's Telegram ID
         admin_link = f"[{admin_id}](tg://user?id={admin_id})"
         admins_text += f"{admin_link} | {admin_name}\n"
 
@@ -203,7 +200,7 @@ async def cancel_add_remove_admin(call: CallbackQuery, state: FSMContext):
 @dp.callback_query_handler(text='stats')
 async def stats(call: CallbackQuery):
     total_users = count_users()
-    new_users = count_new_users_last_24_hours()  # Count new users in the last 24 hours
+    new_users = count_new_users_last_24_hours()
     uptime_seconds = int(time.time() - BOT_START_TIME)
     days, remainder = divmod(uptime_seconds, 86400)  # 86400 seconds in a day
     hours, remainder = divmod(remainder, 3600)      # 3600 seconds in an hour
@@ -222,7 +219,7 @@ async def stats(call: CallbackQuery):
 @dp.callback_query_handler(text='update')
 async def stat_update(call: CallbackQuery):
     total_users = count_users()
-    new_users = count_new_users_last_24_hours()  # Count new users in the last 24 hours
+    new_users = count_new_users_last_24_hours()
     uptime_seconds = int(time.time() - BOT_START_TIME)
     days, remainder = divmod(uptime_seconds, 86400)  # 86400 seconds in a day
     hours, remainder = divmod(remainder, 3600)      # 3600 seconds in an hour
@@ -291,9 +288,8 @@ async def cancel_clear_db(call: CallbackQuery):
 # ADD CHANNEL FUNCTIONALITY ========================================
 # ===================================================================
 async def get_channel_username(channel_id):
-    # Use Bot API to get chat information
     chat = await bot.get_chat(channel_id)
-    return chat.username  # This is the channel's username
+    return chat.username
 
 # Add new channel
 @dp.callback_query_handler(text='add_channel')
@@ -304,7 +300,6 @@ async def add_channel_prompt(call: CallbackQuery, state: FSMContext):
         channel_username = await get_channel_username(channel)
         channels_text += f"@{channel_username} {channel}\n"
 
-    # Display the list of current channels and ask for a new channel
     await call.message.edit_text(
         f"📝 Send the Telegram channel ID you want to add.\n\nExisting channels:\n{channels_text}",
         reply_markup=adminCancelKey,
@@ -335,7 +330,7 @@ async def add_new_channel(message: Message, state: FSMContext):
 # Remove an existing channel
 @dp.callback_query_handler(text='remove_channel')
 async def remove_channel_prompt(call: CallbackQuery, state: FSMContext):
-    channels = get_channel_ids()  # Fetch existing channels from DB
+    channels = get_channel_ids()
     channels_text = ""
     for channel in channels:
         channel_username = await get_channel_username(channel)
@@ -380,7 +375,6 @@ async def open_settings(call: CallbackQuery):
     for admin in admins_details:
         admin_id = admin[0]
         admin_name = admin[1] if admin[1] else "Name not found"
-        # Create a clickable link for each admin's Telegram ID
         admin_link = f"[{admin_id}](tg://user?id={admin_id})"
         admins_text += f"{admin_link} | {admin_name}\n"
 
