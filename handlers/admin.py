@@ -36,6 +36,7 @@ async def broadcast(call: CallbackQuery, state: FSMContext):
     msg = await call.message.edit_text("✍️ Send your message: ", reply_markup=adminBack)
     await state.set_state('getMessage')
     await state.update_data(id=msg.message_id)
+    await call.answer()
 
 # Handle getting a message to broadcast
 @dp.message_handler(content_types='any', state='getMessage')
@@ -67,6 +68,7 @@ async def broadcast_confirm(call: CallbackQuery, state: FSMContext):
         await asyncio.sleep(0.04)  # 25 messages per second (30 is limit)
     await call.message.answer(f"🆗 Message sent\nReceived: {success}\nBlocked: {error}", reply_markup=adminBack)
     await state.finish()
+    await call.answer()
 
 # Handle broadcast decline
 @dp.callback_query_handler(text='decline', state='getAction')
@@ -74,6 +76,7 @@ async def broadcast_decline(call: CallbackQuery, state: FSMContext):
     await state.finish()
     await call.message.delete()
     await call.message.answer(f"Choose what are you going to do?", reply_markup=adminKey)
+    await call.answer()
 
 
 # ===================================================================
@@ -102,6 +105,7 @@ async def add_admin_prompt(call: CallbackQuery, state: FSMContext):
     )
     await state.update_data(msgID=call.message.message_id)
     await state.set_state('add_admin')
+    await call.answer()
 
 # Handle adding an admin
 @dp.message_handler(state='add_admin')
@@ -145,6 +149,7 @@ async def remove_admin_prompt(call: CallbackQuery, state: FSMContext):
     )
     await state.update_data(msgID=call.message.message_id)
     await state.set_state('remove_admin')
+    await call.answer()
 
 # Handle removing an admin
 @dp.message_handler(state='remove_admin')
@@ -190,6 +195,7 @@ async def cancel_add_remove_admin(call: CallbackQuery, state: FSMContext):
         reply_markup=settingsKey,
         parse_mode="Markdown"
     )
+    await call.answer()
 
 
 # ===================================================================
@@ -214,6 +220,7 @@ async def stats(call: CallbackQuery):
         f"🕒 Bot Uptime: {uptime}",
         reply_markup=statsKey
     )
+    await call.answer()
 
 
 @dp.callback_query_handler(text='update')
@@ -249,6 +256,7 @@ async def ask_clear_db(call: CallbackQuery):
         )
     else:
         pass
+    await call.answer()
 
 # Confirm clearing the database
 @dp.callback_query_handler(text='confirm_clear_db')
@@ -258,6 +266,7 @@ async def confirm_clear_db(call: CallbackQuery):
         await call.message.edit_text("🗑 Database has been cleared.", reply_markup=dbBack) # cancel admin
     else:
         pass
+    await call.answer()
 
 # Cancel clearing the database
 @dp.callback_query_handler(text='cancel_clear_db')
@@ -283,6 +292,7 @@ async def cancel_clear_db(call: CallbackQuery):
         reply_markup=settingsKey,
         parse_mode="Markdown"
     )
+    await call.answer()
 
 # ===================================================================
 # ADD CHANNEL FUNCTIONALITY ========================================
@@ -307,6 +317,7 @@ async def add_channel_prompt(call: CallbackQuery, state: FSMContext):
     )
     await state.update_data(msgID=call.message.message_id)
     await state.set_state('add_channel')
+    await call.answer()
 
 
 # Handle adding a channel
@@ -343,6 +354,7 @@ async def remove_channel_prompt(call: CallbackQuery, state: FSMContext):
     )
     await state.update_data(msgID=call.message.message_id)
     await state.set_state('remove_channel')
+    await call.answer()
 
 
 # Handle removing a channel
@@ -390,9 +402,11 @@ async def open_settings(call: CallbackQuery):
         reply_markup=settingsKey,
         parse_mode="Markdown"
     )
+    await call.answer()
 
 # Go back to settings
 @dp.callback_query_handler(text='goback', state='*')
 async def goback(call: CallbackQuery, state: FSMContext):
     await call.message.edit_text(f"Choose what are you going to do?", reply_markup=adminKey)
     await state.finish()
+    await call.answer()
