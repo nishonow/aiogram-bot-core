@@ -18,7 +18,7 @@ import time
 # Handle the /admin command for Admins
 @dp.message_handler(commands=["admin"])
 async def count_command(message: Message):
-    if message.from_user.id in get_admins():
+    if message.from_user.id in await get_admins():
         await message.answer(f"Choose what are you going to do?", reply_markup=adminKey)
     elif message.from_user.id in ADMINS:
         await message.answer(f"Choose what are you going to do?", reply_markup=adminKey)
@@ -58,7 +58,7 @@ async def broadcast_confirm(call: CallbackQuery, state: FSMContext):
     await call.message.edit_reply_markup()
     success = 0
     error = 0
-    for id in get_user_ids():
+    for id in await get_user_ids():
         try:
             await bot.copy_message(chat_id=id, from_chat_id=call.message.chat.id, message_id=msgID)
             success += 1
@@ -86,7 +86,7 @@ async def broadcast_decline(call: CallbackQuery, state: FSMContext):
 # Add new admin
 @dp.callback_query_handler(text='add_admin')
 async def add_admin_prompt(call: CallbackQuery, state: FSMContext):
-    admins_details = get_admin_details()
+    admins_details = await get_admin_details()
     admins_text = ""
     for admin in admins_details:
         admin_id = admin[0]
@@ -94,7 +94,7 @@ async def add_admin_prompt(call: CallbackQuery, state: FSMContext):
         admin_link = f"[{admin_id}](tg://user?id={admin_id})"
         admins_text += f"{admin_link} | {admin_name}\n"
 
-    all_admins_ids = get_admins()
+    all_admins_ids = await get_admins()
     missing_admins = set(all_admins_ids) - {admin[0] for admin in admins_details}
     for missing_admin in missing_admins:
         admins_text += f"{missing_admin} | None\n"
@@ -114,11 +114,11 @@ async def add_new_admin(message: Message, state: FSMContext):
     message_id = data.get('msgID')
     try:
         new_admin = int(message.text)
-        if new_admin in [admin_id for admin_id in get_admins()]:  # Check from the database
+        if new_admin in [admin_id for admin_id in await get_admins()]:  # Check from the database
             await message.answer("⚠️ This user is already an admin.", reply_markup=backToSettings)
             await bot.delete_message(chat_id=message.chat.id, message_id=message_id)
         else:
-            add_admin(new_admin)
+            await add_admin(new_admin)
             await message.answer(f"✅ User {new_admin} has been added as an admin.", reply_markup=backToSettings)
             await bot.delete_message(chat_id=message.chat.id, message_id=message_id)
     except ValueError:
@@ -130,7 +130,7 @@ async def add_new_admin(message: Message, state: FSMContext):
 # Remove an admin
 @dp.callback_query_handler(text='remove_admin')
 async def remove_admin_prompt(call: CallbackQuery, state: FSMContext):
-    admins_details = get_admin_details()
+    admins_details = await get_admin_details()
     admins_text = ""
     for admin in admins_details:
         admin_id = admin[0]
@@ -138,7 +138,7 @@ async def remove_admin_prompt(call: CallbackQuery, state: FSMContext):
         admin_link = f"[{admin_id}](tg://user?id={admin_id})"
         admins_text += f"{admin_link} | {admin_name}\n"
 
-    all_admins_ids = get_admins()
+    all_admins_ids = await get_admins()
     missing_admins = set(all_admins_ids) - {admin[0] for admin in admins_details}
     for missing_admin in missing_admins:
         admins_text += f"{missing_admin} | None\n"
@@ -158,8 +158,8 @@ async def remove_old_admin(message: Message, state: FSMContext):
     message_id = data.get('msgID')
     try:
         admin_to_remove = int(message.text)
-        if admin_to_remove in [admin_id for admin_id in get_admins()]:  # Check from the database
-            remove_admin(admin_to_remove)  # Remove from the database
+        if admin_to_remove in [admin_id for admin_id in await get_admins()]:  # Check from the database
+            await remove_admin(admin_to_remove)  # Remove from the database
             await message.answer(f"✅ User {admin_to_remove} has been removed as an admin.", reply_markup=backToSettings)
             await bot.delete_message(chat_id=message.chat.id, message_id=message_id)
         else:
@@ -175,7 +175,7 @@ async def remove_old_admin(message: Message, state: FSMContext):
 @dp.callback_query_handler(text='cancel_add_admin', state='*')
 async def cancel_add_remove_admin(call: CallbackQuery, state: FSMContext):
     await state.finish()
-    admins_details = get_admin_details()
+    admins_details = await get_admin_details()
     admins_text = ""
     for admin in admins_details:
         admin_id = admin[0]
@@ -183,7 +183,7 @@ async def cancel_add_remove_admin(call: CallbackQuery, state: FSMContext):
         admin_link = f"[{admin_id}](tg://user?id={admin_id})"
         admins_text += f"{admin_link} | {admin_name}\n"
 
-    all_admins_ids = get_admins()
+    all_admins_ids = await get_admins()
     missing_admins = set(all_admins_ids) - {admin[0] for admin in admins_details}
     for missing_admin in missing_admins:
         admins_text += f"{missing_admin} | None\n"
@@ -205,14 +205,14 @@ async def cancel_add_remove_admin(call: CallbackQuery, state: FSMContext):
 # Show bot stats
 @dp.callback_query_handler(text='stats')
 async def stats(call: CallbackQuery):
-    total_users = count_users()
-    new_users = count_new_users_last_24_hours()
+    total_users = await count_users()
+    new_users = await count_new_users_last_24_hours()
     uptime_seconds = int(time.time() - BOT_START_TIME)
     days, remainder = divmod(uptime_seconds, 86400)  # 86400 seconds in a day
     hours, remainder = divmod(remainder, 3600)      # 3600 seconds in an hour
     minutes, seconds = divmod(remainder, 60)       # 60 seconds in a minute
     uptime = f"{days}d {hours}h {minutes}m {seconds}s"
-    total_admins = count_admins()
+    total_admins = await count_admins()
     await call.message.edit_text(
         f"📊 All users: {total_users}\n"
         f"👥 Admins: {total_admins}\n"
@@ -225,14 +225,14 @@ async def stats(call: CallbackQuery):
 
 @dp.callback_query_handler(text='update')
 async def stat_update(call: CallbackQuery):
-    total_users = count_users()
-    new_users = count_new_users_last_24_hours()
+    total_users = await count_users()
+    new_users = await count_new_users_last_24_hours()
     uptime_seconds = int(time.time() - BOT_START_TIME)
     days, remainder = divmod(uptime_seconds, 86400)  # 86400 seconds in a day
     hours, remainder = divmod(remainder, 3600)      # 3600 seconds in an hour
     minutes, seconds = divmod(remainder, 60)       # 60 seconds in a minute
     uptime = f"{days}d {hours}h {minutes}m {seconds}s"
-    total_admins = count_admins()
+    total_admins = await count_admins()
     await bot.answer_callback_query(call.id, "🔄 Everything's updated and ready!", show_alert=True)
     await call.message.edit_text(
         f"📊 All users: {total_users}\n"
@@ -249,7 +249,7 @@ async def stat_update(call: CallbackQuery):
 # Ask to clear the database
 @dp.callback_query_handler(text='clear_db')
 async def ask_clear_db(call: CallbackQuery):
-    if call.from_user.id in get_admins() or call.from_user.id in ADMINS:
+    if call.from_user.id in await get_admins() or call.from_user.id in ADMINS:
         await call.message.edit_text(
             "⚠️ Are you sure you want to clear the database? This action cannot be undone.",
             reply_markup=adminConfirmDB
@@ -261,8 +261,8 @@ async def ask_clear_db(call: CallbackQuery):
 # Confirm clearing the database
 @dp.callback_query_handler(text='confirm_clear_db')
 async def confirm_clear_db(call: CallbackQuery):
-    if call.from_user.id in get_admins() or call.from_user.id in ADMINS:
-        clear_db()
+    if call.from_user.id in await get_admins() or call.from_user.id in ADMINS:
+        await clear_db()
         await call.message.edit_text("🗑 Database has been cleared.", reply_markup=dbBack) # cancel admin
     else:
         pass
@@ -271,7 +271,7 @@ async def confirm_clear_db(call: CallbackQuery):
 # Cancel clearing the database
 @dp.callback_query_handler(text='cancel_clear_db')
 async def cancel_clear_db(call: CallbackQuery):
-    admins_details = get_admin_details()
+    admins_details = await get_admin_details()
     admins_text = ""
     for admin in admins_details:
         admin_id = admin[0]
@@ -280,7 +280,7 @@ async def cancel_clear_db(call: CallbackQuery):
         admin_link = f"[{admin_id}](tg://user?id={admin_id})"
         admins_text += f"{admin_link} | {admin_name}\n"
 
-    all_admins_ids = get_admins()
+    all_admins_ids = await get_admins()
     missing_admins = set(all_admins_ids) - {admin[0] for admin in admins_details}
     for missing_admin in missing_admins:
         admins_text += f"{missing_admin} | None\n"
@@ -304,7 +304,7 @@ async def get_channel_username(channel_id):
 # Add new channel
 @dp.callback_query_handler(text='add_channel')
 async def add_channel_prompt(call: CallbackQuery, state: FSMContext):
-    channels = get_channel_ids()  # Fetch existing channels from DB
+    channels = await get_channel_ids()  # Fetch existing channels from DB
     channels_text = ""
     for channel in channels:
         channel_username = await get_channel_username(channel)
@@ -327,11 +327,11 @@ async def add_new_channel(message: Message, state: FSMContext):
     message_id = data.get('msgID')
     new_channel = message.text.strip()
 
-    if new_channel in get_channel_ids():
+    if new_channel in await get_channel_ids():
         await message.answer("⚠️ This channel is already added.", reply_markup=backToSettings)
         await bot.delete_message(chat_id=message.chat.id, message_id=message_id)
     else:
-        add_channel(new_channel)
+        await add_channel(new_channel)
         channel = await get_channel_username(new_channel)
         await message.answer(f"✅ Channel @{channel} has been added.", reply_markup=backToSettings)
         await bot.delete_message(chat_id=message.chat.id, message_id=message_id)
@@ -341,7 +341,7 @@ async def add_new_channel(message: Message, state: FSMContext):
 # Remove an existing channel
 @dp.callback_query_handler(text='remove_channel')
 async def remove_channel_prompt(call: CallbackQuery, state: FSMContext):
-    channels = get_channel_ids()
+    channels = await get_channel_ids()
     channels_text = ""
     for channel in channels:
         channel_username = await get_channel_username(channel)
@@ -364,8 +364,8 @@ async def remove_existing_channel(message: Message, state: FSMContext):
     message_id = data.get('msgID')
     channel_to_remove = message.text.strip()
 
-    if channel_to_remove in get_channel_ids():
-        remove_channel(channel_to_remove)  # Remove from DB
+    if channel_to_remove in await get_channel_ids():
+        await remove_channel(channel_to_remove)  # Remove from DB
         channel = await get_channel_username(channel_to_remove)
         await message.answer(f"✅ Channel @{channel} has been removed.", reply_markup=backToSettings)
         await bot.delete_message(chat_id=message.chat.id, message_id=message_id)
@@ -382,7 +382,7 @@ async def remove_existing_channel(message: Message, state: FSMContext):
 # Open settings menu
 @dp.callback_query_handler(text='settings')
 async def open_settings(call: CallbackQuery):
-    admins_details = get_admin_details()
+    admins_details = await get_admin_details()
     admins_text = ""
     for admin in admins_details:
         admin_id = admin[0]
@@ -390,7 +390,7 @@ async def open_settings(call: CallbackQuery):
         admin_link = f"[{admin_id}](tg://user?id={admin_id})"
         admins_text += f"{admin_link} | {admin_name}\n"
 
-    all_admins_ids = get_admins()
+    all_admins_ids = await get_admins()
     missing_admins = set(all_admins_ids) - {admin[0] for admin in admins_details}
     for missing_admin in missing_admins:
         admins_text += f"{missing_admin} | None\n"

@@ -6,7 +6,7 @@ from aiogram.types import ChatMemberStatus
 
 
 async def check_channel_membership(user_id: int) -> bool:
-    required_channels = get_channel_ids()
+    required_channels = await get_channel_ids()
 
     if not required_channels:
         return True
@@ -31,7 +31,7 @@ async def get_channel_name(channel_id):
     return chat.title
 
 async def send_channel_join_button(user_id):
-    channel_ids = get_channel_ids()
+    channel_ids = await get_channel_ids()
 
     if not channel_ids:
         return True

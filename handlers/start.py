@@ -13,8 +13,8 @@ async def start_command(message: types.Message):
     name = message.from_user.full_name
     username = message.from_user.username
 
-    if not user_exists(user_id):
-        add_user(user_id, name, username)
+    if not await user_exists(user_id):
+        await add_user(user_id, name, username)
 
     if not await check_channel_membership(user_id):
         await send_channel_join_button(user_id)
