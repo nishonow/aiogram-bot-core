@@ -1,7 +1,7 @@
 import aiosqlite
 import datetime
 
-DB_PATH = "db/bot.db"
+DB_PATH = "bot.db"
 
 # Initialize database
 async def init_db():
