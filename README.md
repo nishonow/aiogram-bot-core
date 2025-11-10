@@ -28,10 +28,10 @@ This repository is a **template** for building Telegram bots with the Aiogram fr
    pip install -r requirements.txt
     ```
 
-3. Configure the bot: Open config.py and set your bot token and admin IDs:
+3. Configure the bot: Create .env and set your bot token and admin IDs:
     ```bash
-    BOT_TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"
-    ADMINS = [123456789, 987654321]  # Replace with admin Telegram IDs
+    BOT_TOKEN=YOUR_TELEGRAM_BOT_TOKEN
+    ADMINS=123456789, 987654321]
     ```
 
 4. Run the bot:
@@ -45,7 +45,7 @@ This repository is a **template** for building Telegram bots with the Aiogram fr
 
 - **Update Keyboards:** Modify or add new keyboard layouts in `core/keyboards.py`.
 
-- **Custom Utilities:** Add shared helper functions in `core/utils.py`.
+- **Custom Utilities:** Add shared helper functions in `utils/`.
 
 
 ## Project Structure
@@ -69,3 +69,6 @@ This repository is a **template** for building Telegram bots with the Aiogram fr
 │   ├── admin_middleware.py
 ├── ── bot.db
 ```
+## Feedback
+
+If you have any questions or feedback, feel free to reach out on Telegram: [@nishonow](https://t.me/nishonow)
