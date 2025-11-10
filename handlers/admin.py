@@ -29,8 +29,7 @@ class ChannelManagementState(StatesGroup):
 
 @router.message(Command("admin"))
 async def admin_command(message: Message):
-    if message.from_user.id in await get_admins() or message.from_user.id in ADMINS:
-        await message.answer("Choose what you are going to do?", reply_markup=admin_keyboard())
+    await message.answer("Choose what you are going to do?", reply_markup=admin_keyboard())
 
 @router.callback_query(F.data == 'broadcast')
 async def broadcast_handler(call: CallbackQuery, state: FSMContext):
@@ -215,18 +214,16 @@ async def stat_update_handler(call: CallbackQuery, bot: Bot):
 
 @router.callback_query(F.data == 'clear_db')
 async def ask_clear_db_handler(call: CallbackQuery):
-    if call.from_user.id in await get_admins() or call.from_user.id in ADMINS:
-        await call.message.edit_text(
-            "⚠️ Are you sure you want to clear the database? This action cannot be undone.",
-            reply_markup=admin_confirm_db_keyboard()
-        )
+    await call.message.edit_text(
+        "⚠️ Are you sure you want to clear the database? This action cannot be undone.",
+        reply_markup=admin_confirm_db_keyboard()
+    )
     await call.answer()
 
 @router.callback_query(F.data == 'confirm_clear_db')
 async def confirm_clear_db_handler(call: CallbackQuery):
-    if call.from_user.id in await get_admins() or call.from_user.id in ADMINS:
-        await clear_db()
-        await call.message.edit_text("🗑 Database has been cleared.", reply_markup=db_back_keyboard())
+    await clear_db()
+    await call.message.edit_text("🗑 Database has been cleared.", reply_markup=db_back_keyboard())
     await call.answer()
 
 @router.callback_query(F.data == 'cancel_clear_db')
