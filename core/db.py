@@ -109,10 +109,12 @@ async def get_admins():
 # Get admin details
 async def get_admin_details():
     admin_ids = await get_admins()
+    if not admin_ids:
+        return []
     async with aiosqlite.connect(DB_PATH) as db:
-        async with db.execute("""
-            SELECT telegram_id, name FROM users WHERE telegram_id IN ({})
-        """.format(','.join('?' * len(admin_ids))), admin_ids) as cursor:
+        async with db.execute(f"""
+            SELECT telegram_id, name FROM users WHERE telegram_id IN ({','.join('?' for _ in admin_ids)})
+        """, admin_ids) as cursor:
             admins_details = await cursor.fetchall()
     return admins_details
 

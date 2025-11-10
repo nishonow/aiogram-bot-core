@@ -1,68 +1,64 @@
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
+from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 
-start = ReplyKeyboardMarkup(resize_keyboard=True)
-start.add(KeyboardButton(text="🎲 Random Fact"))
+def start_keyboard():
+    builder = ReplyKeyboardBuilder()
+    builder.button(text="🎲 Random Fact")
+    return builder.as_markup(resize_keyboard=True)
 
+def admin_keyboard():
+    builder = InlineKeyboardBuilder()
+    builder.button(text="📊 Statistics", callback_data="stats")
+    builder.button(text="📤 Broadcast", callback_data='broadcast')
+    builder.button(text="⚙️ Settings", callback_data="settings")
+    builder.adjust(1)
+    return builder.as_markup()
 
-# ADMIN KEYBOARDS ==========================================================================
+def settings_keyboard():
+    builder = InlineKeyboardBuilder()
+    builder.button(text="🗑 Clear Database", callback_data="clear_db")
+    builder.button(text="➕ Add Admin", callback_data="add_admin")
+    builder.button(text="➖ Remove Admin", callback_data="remove_admin")
+    builder.button(text="➕ Add Channel", callback_data="add_channel")
+    builder.button(text="➖ Remove Channel", callback_data="remove_channel")
+    builder.button(text="⬅️ Back", callback_data="goback")
+    builder.adjust(1, 2, 2, 1)
+    return builder.as_markup()
 
-adminKey = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text="📊 Statistics", callback_data="stats")],
-        [InlineKeyboardButton(text="📤 Broadcast", callback_data='broadcast')],
-        [InlineKeyboardButton(text="⚙️ Settings", callback_data="settings")],
-    ]
-)
-settingsKey = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text="🗑 Clear Database", callback_data="clear_db")],
-        [
-            InlineKeyboardButton(text="➕ Add Admin", callback_data="add_admin"),
-            InlineKeyboardButton(text="➖ Remove Admin", callback_data="remove_admin")
-        ],
-        [
-            InlineKeyboardButton(text="➕ Add Channel", callback_data="add_channel"),
-            InlineKeyboardButton(text="➖ Remove Channel", callback_data="remove_channel")
-        ],
-        [InlineKeyboardButton(text="⬅️ Back", callback_data="goback")],
-    ]
-)
+def stats_keyboard():
+    builder = InlineKeyboardBuilder()
+    builder.button(text="🔄 Update", callback_data="update")
+    builder.button(text="⬅️ Back", callback_data="goback")
+    builder.adjust(1)
+    return builder.as_markup()
 
-statsKey = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text="🔄 Update", callback_data="update")],
-        [InlineKeyboardButton(text="⬅️ Back", callback_data="goback")],
-    ]
-)
-adminBack = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text="⬅️ Back", callback_data="goback")]
-    ]
-)
-dbBack = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text="⬅️ Back", callback_data="cancel_add_admin")]
-    ]
-)
+def admin_back_keyboard():
+    builder = InlineKeyboardBuilder()
+    builder.button(text="⬅️ Back", callback_data="goback")
+    return builder.as_markup()
 
-ConfirmBroadcast = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text="✅ Confirm", callback_data="confirm")],
-        [InlineKeyboardButton(text="🚫 Decline", callback_data="decline")]
-    ]
-)
-adminConfirmDB = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="✅ Confirm", callback_data="confirm_clear_db")],
-        [InlineKeyboardButton(text="❌ Cancel", callback_data="cancel_clear_db")]
-    ]
-)
-adminCancelKey = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text="❌ Cancel", callback_data="cancel_add_admin")]
-    ]
-)
-backToSettings = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton(text="⬅️ Back", callback_data="cancel_add_admin")]
-    ]
-)
+def db_back_keyboard():
+    builder = InlineKeyboardBuilder()
+    builder.button(text="⬅️ Back", callback_data="cancel_add_admin")
+    return builder.as_markup()
+
+def confirm_broadcast_keyboard():
+    builder = InlineKeyboardBuilder()
+    builder.button(text="✅ Confirm", callback_data="confirm")
+    builder.button(text="🚫 Decline", callback_data="decline")
+    return builder.as_markup()
+
+def admin_confirm_db_keyboard():
+    builder = InlineKeyboardBuilder()
+    builder.button(text="✅ Confirm", callback_data="confirm_clear_db")
+    builder.button(text="❌ Cancel", callback_data="cancel_clear_db")
+    return builder.as_markup()
+
+def admin_cancel_keyboard():
+    builder = InlineKeyboardBuilder()
+    builder.button(text="❌ Cancel", callback_data="cancel_add_admin")
+    return builder.as_markup()
+
+def back_to_settings_keyboard():
+    builder = InlineKeyboardBuilder()
+    builder.button(text="⬅️ Back", callback_data="cancel_add_admin")
+    return builder.as_markup()

@@ -1,53 +1,47 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
+from aiogram.enums import ChatMemberStatus
+from aiogram import Bot
+
 from core.db import get_channel_ids
-from loader import bot
 
-from aiogram.types import ChatMemberStatus
-
-
-async def check_channel_membership(user_id: int) -> bool:
+async def check_channel_membership(bot: Bot, user_id: int) -> bool:
     required_channels = await get_channel_ids()
-
     if not required_channels:
         return True
 
     for channel_id in required_channels:
         try:
             chat_member = await bot.get_chat_member(chat_id=channel_id, user_id=user_id)
-            if chat_member.status not in [ChatMemberStatus.MEMBER, ChatMemberStatus.ADMINISTRATOR,
-                                          ChatMemberStatus.OWNER]:
+            if chat_member.status not in [ChatMemberStatus.MEMBER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER]:
                 return False
         except Exception:
             return False
-
     return True
 
-async def get_channel_username(channel_id):
+async def get_channel_username(bot: Bot, channel_id: int):
     chat = await bot.get_chat(channel_id)
     return chat.username
 
-async def get_channel_name(channel_id):
+async def get_channel_name(bot: Bot, channel_id: int):
     chat = await bot.get_chat(channel_id)
     return chat.title
 
-async def send_channel_join_button(user_id):
+async def send_channel_join_button(message: Message, bot: Bot):
     channel_ids = await get_channel_ids()
-
     if not channel_ids:
         return True
 
-    if not await check_channel_membership(user_id):
+    if not await check_channel_membership(bot, message.from_user.id):
         markup = InlineKeyboardMarkup(row_width=1)
         for channel_id in channel_ids:
-            channel_username = await get_channel_username(channel_id)
-            channel_name = await get_channel_name(channel_id)
-            button = InlineKeyboardButton(
-                text=f"{channel_name}",
-                url=f"https://t.me/{channel_username}"
-            )
+            channel_username = await get_channel_username(bot, channel_id)
+            channel_name = await get_channel_name(bot, channel_id)
+            button = InlineKeyboardButton(text=f"{channel_name}", url=f"https://t.me/{channel_username}")
             markup.add(button)
-        await bot.send_message(user_id, "❗ You need to join the channels first!\n\n"
-                                        "Click below to join and then press /start to continue. 🚀", reply_markup=markup)
+        await message.answer(
+            "❗ You need to join the channels first!\n\nClick below to join and then press /start to continue. 🚀",
+            reply_markup=markup
+        )
         return False
     return True
 

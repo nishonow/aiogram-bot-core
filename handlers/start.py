@@ -1,14 +1,16 @@
 import random
-from aiogram import types
-from aiogram.dispatcher.filters import CommandStart
-from core.db import add_user, user_exists
-from core.keyboards import start
-from core.utils import FUN_FACTS, check_channel_membership, send_channel_join_button
-from loader import dp, bot
+from aiogram import types, Router
+from aiogram.filters import CommandStart, Text
+from config import ADMINS
+from aiogram import Bot
+from core.db import add_user, user_exists, get_admins
+from core.keyboards import start_keyboard
+from utils.helpers import FUN_FACTS, check_channel_membership, send_channel_join_button
 
+router = Router()
 
-@dp.message_handler(CommandStart())
-async def start_command(message: types.Message):
+@router.message(CommandStart())
+async def start_command(message: types.Message, bot: Bot):
     user_id = message.from_user.id
     name = message.from_user.full_name
     username = message.from_user.username
@@ -16,31 +18,32 @@ async def start_command(message: types.Message):
     if not await user_exists(user_id):
         await add_user(user_id, name, username)
 
-    if not await check_channel_membership(user_id):
-        await send_channel_join_button(user_id)
+    if not await check_channel_membership(bot, user_id):
+        await send_channel_join_button(message, bot)
         return
 
-    await message.answer("Welcome to the bot! Press the button below.", reply_markup=start)
+    await message.answer("Welcome to the bot! Press the button below.", reply_markup=start_keyboard)
 
 
-@dp.message_handler(text="🎲 Random Fact")
-async def random_fact_handler(message: types.Message):
-    user_id = message.from_user.id
-
-    if not await check_channel_membership(user_id):
-        await send_channel_join_button(user_id)
+@router.message(Text("🎲 Random Fact"))
+async def random_fact_handler(message: types.Message, bot: Bot):
+    if not await check_channel_membership(bot, message.from_user.id):
+        await send_channel_join_button(message, bot)
         return
 
     fact = random.choice(FUN_FACTS)
     await message.answer(f"🧐 Did you know?\n\n{fact}")
 
 
-@dp.message_handler()
-async def fact_add(message: types.Message):
+@router.message()
+async def fact_add(message: types.Message, bot: Bot):
     user_id = message.from_user.id
+    admins = await get_admins()
+    if user_id not in ADMINS and user_id not in admins:
+        return
 
-    if not await check_channel_membership(user_id):
-        await send_channel_join_button(user_id)
+    if not await check_channel_membership(bot, user_id):
+        await send_channel_join_button(message, bot)
         return
 
     text = message.text
