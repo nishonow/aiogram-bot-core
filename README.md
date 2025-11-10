@@ -53,7 +53,6 @@ This repository is a **template** for building Telegram bots with the Aiogram fr
 ```aiogram-bot-core/
 ├── app.py
 ├── config.py
-├── loader.py
 ├── requirements.txt
 ├── core/
 │   ├── __init__.py
@@ -63,5 +62,10 @@ This repository is a **template** for building Telegram bots with the Aiogram fr
 │   ├── __init__.py
 │   ├── admin.py
 │   ├── start.py
+├── utils/
+│   ├── consts.py
+│   ├── helpers.py
+├── middlewares/
+│   ├── admin_middleware.py
 ├── ── bot.db
 ```

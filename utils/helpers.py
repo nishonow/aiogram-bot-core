@@ -12,7 +12,7 @@ async def check_channel_membership(bot: Bot, user_id: int) -> bool:
     for channel_id in required_channels:
         try:
             chat_member = await bot.get_chat_member(chat_id=channel_id, user_id=user_id)
-            if chat_member.status not in [ChatMemberStatus.MEMBER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.OWNER]:
+            if chat_member.status not in [ChatMemberStatus.MEMBER, ChatMemberStatus.ADMINISTRATOR, ChatMemberStatus.CREATOR]:
                 return False
         except Exception:
             return False
@@ -32,12 +32,14 @@ async def send_channel_join_button(message: Message, bot: Bot):
         return True
 
     if not await check_channel_membership(bot, message.from_user.id):
-        markup = InlineKeyboardMarkup(row_width=1)
+        rows = []
         for channel_id in channel_ids:
             channel_username = await get_channel_username(bot, channel_id)
             channel_name = await get_channel_name(bot, channel_id)
-            button = InlineKeyboardButton(text=f"{channel_name}", url=f"https://t.me/{channel_username}")
-            markup.add(button)
+            button = InlineKeyboardButton(text=channel_name, url=f"https://t.me/{channel_username}")
+            rows.append([button])  # each row is a list of buttons
+
+        markup = InlineKeyboardMarkup(inline_keyboard=rows)
         await message.answer(
             "❗ You need to join the channels first!\n\nClick below to join and then press /start to continue. 🚀",
             reply_markup=markup

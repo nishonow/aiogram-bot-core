@@ -64,7 +64,8 @@ async def broadcast_confirm_handler(call: CallbackQuery, state: FSMContext, bot:
         except Exception:
             error += 1
         await asyncio.sleep(0.04)
-    await call.message.answer(f"🆗 Message sent\nReceived: {success}\nBlocked: {error}", reply_markup=admin_back_keyboard())
+    await call.message.answer(f"🆗 Message sent\nReceived: {success}\nBlocked: {error}")
+    await call.message.answer("Choose what you are going to do?", reply_markup=admin_keyboard())
     await state.clear()
     await call.answer()
 
@@ -155,8 +156,8 @@ async def remove_old_admin_handler(message: Message, state: FSMContext, bot: Bot
     finally:
         await state.clear()
 
-@router.callback_query(F.data == 'cancel_add_admin', AdminManagementState.add_admin)
-@router.callback_query(F.data == 'cancel_add_admin', AdminManagementState.remove_admin)
+@router.callback_query(F.data == 'cancel_add_admin')
+@router.callback_query(F.data == 'cancel_add_admin')
 async def cancel_add_remove_admin_handler(call: CallbackQuery, state: FSMContext):
     await state.clear()
     admins_details = await get_admin_details()
