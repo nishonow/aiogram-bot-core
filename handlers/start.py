@@ -22,7 +22,7 @@ async def start_command(message: types.Message, bot: Bot):
         await send_channel_join_button(message, bot)
         return
 
-    await message.answer("Welcome to the bot! Press the button below.", reply_markup=start_keyboard)
+    await message.answer("Welcome to the bot! Press the button below.", reply_markup=start_keyboard())
 
 
 @router.message(F.text == "🎲 Random Fact")
@@ -33,19 +33,3 @@ async def random_fact_handler(message: types.Message, bot: Bot):
 
     fact = random.choice(FUN_FACTS)
     await message.answer(f"🧐 Did you know?\n\n{fact}")
-
-
-@router.message()
-async def fact_add(message: types.Message, bot: Bot):
-    user_id = message.from_user.id
-    admins = await get_admins()
-    if user_id not in ADMINS and user_id not in admins:
-        return
-
-    if not await check_channel_membership(bot, user_id):
-        await send_channel_join_button(message, bot)
-        return
-
-    text = message.text
-    FUN_FACTS.append(text)
-    await message.reply("✅ Fact added successfully!")
