@@ -1,6 +1,6 @@
 import random
-from aiogram import types, Router
-from aiogram.filters import CommandStart, Text
+from aiogram import types, Router, F
+from aiogram.filters import CommandStart
 from config import ADMINS
 from aiogram import Bot
 from core.db import add_user, user_exists, get_admins
@@ -25,7 +25,7 @@ async def start_command(message: types.Message, bot: Bot):
     await message.answer("Welcome to the bot! Press the button below.", reply_markup=start_keyboard)
 
 
-@router.message(Text("🎲 Random Fact"))
+@router.message(F.text == "🎲 Random Fact")
 async def random_fact_handler(message: types.Message, bot: Bot):
     if not await check_channel_membership(bot, message.from_user.id):
         await send_channel_join_button(message, bot)

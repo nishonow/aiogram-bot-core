@@ -1,13 +1,10 @@
 import asyncio
 import logging
 from aiogram import Bot, Dispatcher
-import time
 from aiogram.fsm.storage.memory import MemoryStorage
 import handlers
 from core.db import on_startup
 from config import BOT_TOKEN
-
-BOT_START_TIME = time.time()
 
 async def main():
     logging.basicConfig(

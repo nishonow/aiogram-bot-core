@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
 from config import ADMINS
-from app import BOT_START_TIME
+from utils.consts import BOT_START_TIME
 from core.db import count_users, get_user_ids, count_new_users_last_24_hours, clear_db, get_admins, add_admin, \
     remove_admin, count_admins, get_admin_details, get_channel_ids, remove_channel, add_channel
 from core.keyboards import admin_keyboard, confirm_broadcast_keyboard, settings_keyboard, stats_keyboard, \
