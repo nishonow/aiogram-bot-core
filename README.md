@@ -72,3 +72,5 @@ This repository is a **template** for building Telegram bots with the Aiogram fr
 ## Feedback
 
 If you have any questions or feedback, feel free to reach out on Telegram: [@nishonow](https://t.me/nishonow)
+
+If you want to create bots using this template, check out the GPT-based tool built on it: [AioGPT](https://chatgpt.com/g/g-692c524573f88191963a069eba90ae18-aiogpt-aiogram-helper)
