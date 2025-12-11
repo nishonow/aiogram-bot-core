@@ -31,7 +31,7 @@ This repository is a **template** for building Telegram bots with the Aiogram fr
 3. Configure the bot: Create .env and set your bot token and admin IDs:
     ```bash
     BOT_TOKEN=YOUR_TELEGRAM_BOT_TOKEN
-    ADMINS=123456789, 987654321]
+    ADMINS=[123456789, 987654321]
     ```
 
 4. Run the bot:
